@@ -41,5 +41,5 @@ docker build -t mel-alert .
 Run the docker image in container
 
 ```
-docker run --env-file ./.env -w /mel-alert -t -d --name mel-alert mel-alert bash -c "./node_modules/.bin/ts-node ./data.ts"
+docker run --env-file ./.env -w /mel-alert -t -d --name mel-alert mel-alert bash -c "./node_modules/.bin/ts-node ./loop.ts"
 ```
