@@ -1,0 +1,11 @@
+{
+  "596593": {
+    "name": "<name of the building>",
+    "devices":[
+      {
+        "id": 12345678,
+        "name": "<name of the device>"
+      }
+    ]
+  }
+}
