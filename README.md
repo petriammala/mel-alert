@@ -15,6 +15,19 @@ If you don't want to receive emails or pushover notifications,
 you can drop environment optional variables.
 Also make sure that Melcloud application version is correct.
 
+Edit file [devices.json](./src/config/devices.json) to list all devices you want to
+be monitored. Also edit file [alerts.json](./src/config/alerts.json) to create
+alerts you might be interested in.
+
+#### How to find building id and device ids
+
+1. Login to MelCloud account at https://app.melcloud.com
+2. In the Building List page click one of the devices with right button of the mouse
+3. Select Inspect or Inspect Element to open developer console
+4. In the source code of the page, seek `data-buildingid="nnnnnn"` which is the id of the building
+5. Underneath the building id there is another id attribute `id="device-nnnnnnnn-i"` where `nnnnnnnn` should be the id of the device
+6. If you have multiple devices, they all should be found underneath the buildiing id
+
 ### Run once (in host system)
 
 ```
