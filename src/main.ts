@@ -1,11 +1,27 @@
 import {readFileSync} from 'fs'
-import {getData} from "./data";
+import {getData, listDevices} from "./data";
 
-readFileSync(process.argv[2] ?? '.env')
+readFileSync(process.argv[3] ?? '.env')
     .toString()
     .split('\n')
     .filter(line => line.trim() != '' && !line.startsWith('#'))
     .map(line => line.split('='))
     .forEach(([name, value]) => process.env[name] = value)
 
-getData().catch(err => console.error(err))
+const commands = <{[key: string]: () => Promise<void>}>{
+    data: getData,
+    buildings: listDevices,
+    devices: listDevices,
+    usage: showUsage
+}
+
+function showUsage() {
+    console.info('Usage:')
+    console.info('npx ts-node src/main <command> <env>')
+    console.info('where <command> is one of:', Object.keys(commands).join(', '))
+    console.info('and <env> is environmental variables file, defaults to .env')
+    return Promise.resolve()
+}
+
+const executeCommand = commands[process.argv[2]] ?? commands['usage']
+executeCommand().catch(err => console.error(err))

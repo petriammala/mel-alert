@@ -87,3 +87,14 @@ export type Config = {
         user: string
     }
 }
+
+export type Building = {
+    ID: number
+    Name: string
+    Structure: {
+        Devices: {
+            DeviceID: number
+            DeviceName: string
+        }[]
+    }
+}

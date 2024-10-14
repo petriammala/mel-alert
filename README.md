@@ -21,14 +21,13 @@ alerts you might be interested in.
 
 #### How to find building id and device ids
 
-1. Login to MelCloud account at https://app.melcloud.com
-2. In the Building List page click one of the devices with right button of the mouse
-3. Select Inspect or Inspect Element to open developer console
-4. In the source code of the page, seek `data-buildingid="nnnnnn"` which is the id of the building
-5. Underneath the building id there is another id attribute `id="device-nnnnnnnn-i"` where `nnnnnnnn` should be the id of the device
-6. If you have multiple devices, they all should be found underneath the buildiing id
+Easy, just run
+```
+npx ts-node src/main.ts devices [.env]
+```
+in the host system
 
-### Run once (in host system)
+### Run once (in the host system)
 
 ```
 npm start
@@ -36,7 +35,7 @@ npm start
 or
 
 ```
-npx ts-node src/main.ts .env-local 
+npx ts-node src/main.ts data [.env]
 ```
 
 if you want to use customized `.env` file
