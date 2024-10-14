@@ -1,4 +1,4 @@
-import {LoginData, ErrorData, MELData, Building, OperationModes} from "./types";
+import {LoginData, ErrorData, MELData, Building, OperationModes, DevicesByBuilding} from "./types";
 import {collectAlerts, send} from './alerts'
 import {getJson, postJson} from "./api-client";
 import {config} from "./config/config";
@@ -43,9 +43,13 @@ async function fetchData(id: number, buildingId: number, retry?: number) {
     }
 }
 
-export async function listDevices() {
+export async function getDevices() {
     const contextKey = context.lastUsedContextKey ?? await login()
-    const buildings = await getJson<Building[]>('https://app.melcloud.com/Mitsubishi.Wifi.Client/User/ListDevices', {'X-MitsContextKey': contextKey})
+    return getJson<Building[]>('https://app.melcloud.com/Mitsubishi.Wifi.Client/User/ListDevices', {'X-MitsContextKey': contextKey})
+}
+
+export async function listDevices() {
+    const buildings = await getDevices()
     for (const building of buildings) {
         console.info(`Building: ${building.Name} (${building.ID})`)
         for (const device of building.Structure.Devices)
@@ -54,7 +58,14 @@ export async function listDevices() {
 }
 
 export async function getData() {
-    const {devicesByBuilding, alertIntervalMs} = config()
+    const devicesByBuilding = (await getDevices())
+        .reduce((acc, building) => ({
+                ...acc,
+                [building.ID]: {
+                    name: building.Name,
+                    devices: building.Structure.Devices.map(device => ({id: device.DeviceID, name: device.DeviceName}))
+                }
+        }), {} as DevicesByBuilding)
     console.info('Checking state of devices')
     for (const buildingId of Object.keys(devicesByBuilding)) {
         console.info('Building:', devicesByBuilding[buildingId].name, `(${buildingId})`)
@@ -68,6 +79,8 @@ export async function getData() {
             console.info('Target temperature:', data.SetTemperature)
             console.info('Fan speed:', data.SetFanSpeed)
             console.info('Operation mode:', OperationModes[data.OperationMode], `(${data.OperationMode})`)
+            console.info('Last communication', new Date(data.LastCommunication))
+            console.info('Next communication', new Date(data.NextCommunication))
             console.info('Alerts:', alerts.length ? alerts.join(', ') : '-')
             if (alerts.length) {
                 await send(alerts, {...device, ...data})

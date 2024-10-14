@@ -1,8 +1,11 @@
 # mel-alert
 
-Sends alerts from MELCloud by email or by pushover.
+Sends alerts from MELCloud by email or by pushover. Requires [NodeJs](https://nodejs.org/), JavaScript runtime environment,
+to run in host system and [Docker Desktop](https://www.docker.com/products/docker-desktop/) or alternative to run in container.
 
 ## Steps to make it run for you
+
+If you are planning to run this software on you're system, run `npm install` to install dependencies.
 
 Setup environmental variables in [.env](./.env):
 
@@ -15,9 +18,9 @@ If you don't want to receive emails or pushover notifications,
 you can drop environment optional variables.
 Also make sure that Melcloud application version is correct.
 
-Edit file [devices.json](./src/config/devices.json) to list all devices you want to
-be monitored. Also edit file [alerts.json](./src/config/alerts.json) to create
-alerts you might be interested in.
+Edit file [alerts.json](./src/config/alerts.json) to create
+alerts you might be interested in. The file has few examples
+how to create them.
 
 #### How to find building id and device ids
 
@@ -27,8 +30,9 @@ npx ts-node src/main.ts devices [.env]
 ```
 in the host system
 
-### Run once (in the host system)
+### Get data (in the host system)
 
+To get data from the devices, run
 ```
 npm start
 ```
@@ -38,7 +42,7 @@ or
 npx ts-node src/main.ts data [.env]
 ```
 
-if you want to use customized `.env` file
+if you want to use customized `.env` file. 
 
 ### Docker
 

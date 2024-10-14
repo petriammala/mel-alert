@@ -54,7 +54,7 @@ export type Alert = {
     deviceIdOrName: number | string
     key: keyof MELData
     operator: '<' | '=' | '==' | '===' | '>' | '<=' | '>=' | '!=' | '!==' | '<>'
-    value: number
+    value: unknown
     message: string
 }
 
@@ -63,7 +63,7 @@ export type Device = {
     name: string
 }
 
-type DevicesByBuilding = {
+export type DevicesByBuilding = {
     [buildingId: string]: {
         name: string
         devices: Device[]
@@ -77,7 +77,6 @@ export type Config = {
     smtpPassword: string
     melCloudUsername: string
     melCloudPassword: string
-    devicesByBuilding: DevicesByBuilding
     alerts: Alert[]
     alertIntervalMs: number
     appVersion: string

@@ -12,5 +12,12 @@
     "operator": ">",
     "value": 23,
     "message": "Temperature over 23°C"
+  },
+  {
+    "deviceIdOrName": "<id or name of the device>",
+    "key": "LastCommunication",
+    "operator": "<",
+    "value": "$today",
+    "message": "No communication with the device today"
   }
 ]

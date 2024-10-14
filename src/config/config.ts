@@ -1,5 +1,4 @@
 import {Alert, Config} from "../types";
-import devicesByBuilding from "./devices.json";
 import alerts from "./alerts.json";
 
 export function config(): Config {
@@ -11,7 +10,6 @@ export function config(): Config {
         melCloudUsername: process.env.MELCLOUD_USERNAME,
         melCloudPassword: process.env.MELCLOUD_PASSWORD,
         alertIntervalMs: Number(process.env.ALERT_INTERVAL_MS ?? 10000),
-        devicesByBuilding,
         alerts: alerts as Alert[],
         appVersion: process.env.MELCLOUD_APPVERSION,
         mail: {
