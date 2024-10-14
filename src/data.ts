@@ -1,4 +1,4 @@
-import {LoginData, ErrorData, MELData, Building} from "./types";
+import {LoginData, ErrorData, MELData, Building, OperationModes} from "./types";
 import {collectAlerts, send} from './alerts'
 import {getJson, postJson} from "./api-client";
 import {config} from "./config/config";
@@ -67,6 +67,7 @@ export async function getData() {
             console.info('Room temperature:', data.RoomTemperature)
             console.info('Target temperature:', data.SetTemperature)
             console.info('Fan speed:', data.SetFanSpeed)
+            console.info('Operation mode:', OperationModes[data.OperationMode], `(${data.OperationMode})`)
             console.info('Alerts:', alerts.length ? alerts.join(', ') : '-')
             if (alerts.length) {
                 await send(alerts, {...device, ...data})
