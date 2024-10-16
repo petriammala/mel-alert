@@ -73,6 +73,7 @@ export async function getData() {
             console.info('Device:', device.name, `(${device.id})`)
             const data = await fetchData(device.id, Number(buildingId))
             const alerts = collectAlerts(data, device)
+            const date = new Date()
             const lastCommunication = new Date(`${data.LastCommunication}Z`)
             const nextCommunication = new Date(`${data.NextCommunication}Z`)
             console.info('Power:', data.Power)
@@ -83,6 +84,7 @@ export async function getData() {
             console.info('Operation mode:', OperationModes[data.OperationMode], `(${data.OperationMode})`)
             console.info('Last communication:', lastCommunication.toLocaleDateString(), lastCommunication.toLocaleTimeString())
             console.info('Next communication:', nextCommunication.toLocaleDateString(), nextCommunication.toLocaleTimeString())
+            console.info('Time now:', date.toLocaleDateString(), date.toLocaleTimeString())
             console.info('Alerts:', alerts.length ? alerts.join(', ') : '-')
             if (alerts.length) {
                 await send(alerts, {...device, ...data})
