@@ -20,6 +20,7 @@ async function login() {
     if (isErrorData(loginRes)) {
         throw new Error('Login error')
     }
+    context.lastUsedContextKey = loginRes.LoginData.ContextKey
     return loginRes.LoginData.ContextKey
 }
 
@@ -38,7 +39,6 @@ async function fetchData(id: number, buildingId: number, retry?: number) {
         context.lastUsedContextKey = undefined
         return fetchData(id, buildingId, retry ? retry + 1 : 1)
     } else {
-        context.lastUsedContextKey = contextKey
         return res
     }
 }
