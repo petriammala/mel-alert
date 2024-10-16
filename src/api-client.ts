@@ -8,7 +8,7 @@ async function fetchJson<T>(url: string, method: string = 'GET', extraHeaders: o
     if (res.ok) {
         return (await res.json()) as T
     }
-    return <T>{LoginStatus: res.status, ErrorMessage: res.statusText, ErrorId: res.status}
+    throw new Error(`${res.status}: ${res.statusText}`)
 }
 
 export function getJson<T>(url: string, headers: { [key: string]: string }) {
