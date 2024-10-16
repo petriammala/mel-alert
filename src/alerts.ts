@@ -21,7 +21,7 @@ function resolveNumberValue(value: unknown): number {
         return value ? 1 : 0
     }
     if (typeof value == 'string') {
-        const dateValue = new Date(value)
+        const dateValue = new Date(`${value}Z`)
         if (dateValue.toString() != 'Invalid Date' ) {
             return dateValue.getTime()
         }
