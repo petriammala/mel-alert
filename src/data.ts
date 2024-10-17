@@ -28,24 +28,41 @@ function isErrorData(data: LoginData | MELData | ErrorData): data is ErrorData {
     return (data as ErrorData).ErrorId != undefined
 }
 
-async function fetchData(id: number, buildingId: number, retry?: number) {
-    const contextKey = context.lastUsedContextKey ?? await login()
-    const fetchDataUrl = `https://app.melcloud.com/Mitsubishi.Wifi.Client/Device/Get?id=${id}&buildingID=${buildingId}`
-    const res = await getJson<MELData | ErrorData>(fetchDataUrl, {'X-MitsContextKey': contextKey})
-    if (isErrorData(res)) {
-        if (retry >= 2) {
-            throw new Error('Get data failed too many times')
+async function withRetries<T>(fn: () => Promise<T>, retryCount: number = 2, resetContextKeyOnFailure: boolean = true) {
+    if (retryCount < 0) {
+        throw new Error(`Function ${fn} failed too many times`)
+    }
+    try {
+        const returnValue = await fn() // needs to be awaited to catch possible errors
+        return returnValue
+    } catch (err) {
+        if (resetContextKeyOnFailure) {
+            context.lastUsedContextKey = undefined
         }
-        context.lastUsedContextKey = undefined
-        return fetchData(id, buildingId, retry ? retry + 1 : 1)
-    } else {
-        return res
+        console.error('Error', err instanceof Error ? err.message : 'Unknown error')
+        console.info('Retrying...')
+        return withRetries(fn, retryCount - 1)
     }
 }
 
+async function fetchData(id: number, buildingId: number) {
+    return withRetries(async () => {
+        const contextKey = context.lastUsedContextKey ?? await login()
+        const fetchDataUrl = `https://app.melcloud.com/Mitsubishi.Wifi.Client/Device/Get?id=${id}&buildingID=${buildingId}`
+        const res = await getJson<MELData | ErrorData>(fetchDataUrl, {'X-MitsContextKey': contextKey})
+        if (isErrorData(res)) {
+            throw new Error(res.ErrorMessage)
+        } else {
+            return res
+        }
+    })
+}
+
 export async function getDevices() {
-    const contextKey = context.lastUsedContextKey ?? await login()
-    return getJson<Building[]>('https://app.melcloud.com/Mitsubishi.Wifi.Client/User/ListDevices', {'X-MitsContextKey': contextKey})
+    return withRetries(async () => {
+        const contextKey = context.lastUsedContextKey ?? await login()
+        return getJson<Building[]>('https://app.melcloud.com/Mitsubishi.Wifi.Client/User/ListDevices', {'X-MitsContextKey': contextKey})
+    })
 }
 
 export async function listDevices() {
