@@ -99,9 +99,9 @@ export async function getData() {
             console.info('Target temperature:', data.SetTemperature)
             console.info('Fan speed:', data.SetFanSpeed)
             console.info('Operation mode:', OperationModes[data.OperationMode], `(${data.OperationMode})`)
-            console.info('Last communication:', lastCommunication.toLocaleDateString(), lastCommunication.toLocaleTimeString())
-            console.info('Next communication:', nextCommunication.toLocaleDateString(), nextCommunication.toLocaleTimeString())
-            console.info('Time now:', date.toLocaleDateString(), date.toLocaleTimeString())
+            console.info('Last communication:', lastCommunication.toLocaleString())
+            console.info('Next communication:', nextCommunication.toLocaleString())
+            console.info('Time now:', date.toLocaleString())
             console.info('Alerts:', alerts.length ? alerts.join(', ') : '-')
             if (alerts.length) {
                 await send(alerts, {...device, ...data})
