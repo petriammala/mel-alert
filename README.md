@@ -26,7 +26,7 @@ how to create them.
 
 Easy, just run
 ```
-npx ts-node src/main.ts devices [.env]
+npx ts-node src/main.ts devices .env
 ```
 in the host system
 
@@ -39,7 +39,7 @@ npm start
 or
 
 ```
-npx ts-node src/main.ts data [.env]
+npx ts-node src/main.ts data .your-env
 ```
 
 if you want to use customized `.env` file. 
@@ -57,5 +57,5 @@ docker build -t mel-alert .
 Run the docker image in container
 
 ```
-docker run --env-file ./.env -w /mel-alert -t -d --name mel-alert mel-alert bash -c "./node_modules/.bin/ts-node ./loop.ts"
+docker run --env-file ./.env -w /mel-alert -t -d --name mel-alert mel-alert bash -c "./node_modules/.bin/ts-node ./main.ts loop"
 ```

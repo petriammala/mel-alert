@@ -1,15 +1,18 @@
 import {readFileSync} from 'fs'
 import {getData, listDevices} from "./data";
+import {runInLoop} from "./loop";
 
-readFileSync(process.argv[3] ?? '.env')
-    .toString()
-    .split('\n')
-    .filter(line => line.trim() != '' && !line.startsWith('#'))
-    .map(line => line.split('='))
-    .forEach(([name, value]) => process.env[name] = value)
-
+if (process.argv[3]) {
+    readFileSync(process.argv[3])
+        .toString()
+        .split('\n')
+        .filter(line => line.trim() != '' && !line.startsWith('#'))
+        .map(line => line.split('='))
+        .forEach(([name, value]) => process.env[name] = value)
+}
 const commands = <{[key: string]: () => Promise<void>}>{
     data: getData,
+    loop: runInLoop,
     buildings: listDevices,
     devices: listDevices,
     usage: showUsage

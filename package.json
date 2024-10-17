@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "start": "ts-node src/main.ts data"
+    "start": "ts-node src/main.ts data .env"
   },
   "devDependencies": {
     "@types/nodemailer": "^6.4.16",
