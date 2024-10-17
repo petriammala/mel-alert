@@ -8,7 +8,7 @@ function loop() {
         console.error(err)
         void send([err instanceof Error ? err.message : 'Unknown error'])
     }).finally(() => {
-        console.info(`\nNext run at ${alertIntervalMs} ms\n`)
+        console.info(`\nNext run at ${new Date(new Date().getTime() + alertIntervalMs).toLocaleString()}\n`)
         setTimeout(loop, alertIntervalMs)
     })
 }
