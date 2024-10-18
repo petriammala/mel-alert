@@ -4,20 +4,20 @@
     "key": "RoomTemperature",
     "operator": "<",
     "value": 19,
-    "message": "Temperature under 19°C"
+    "messageKey": "alert.temperatureBelow"
   },
   {
     "deviceIdOrName": "<id or name of the device>",
     "key": "RoomTemperature",
     "operator": ">",
     "value": 23,
-    "message": "Temperature over 23°C"
+    "messageKey": "alert.temperatureAbove"
   },
   {
     "deviceIdOrName": "<id or name of the device>",
     "key": "LastCommunication",
     "operator": "<",
     "value": "$today",
-    "message": "No communication with the device today"
+    "messageKey": "alert.noCommunicationToday"
   }
 ]

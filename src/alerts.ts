@@ -2,15 +2,16 @@ import {Device, MELData} from "./types";
 import {config} from "./config/config";
 import {sendEmail} from "./emailer";
 import {sendNotification} from "./pushover";
+import {t} from "i18next";
 
 function message(msg: string, data: Device & MELData) {
     return `${msg}
 
- Device: ${data.name}
- Room temperature: ${data.RoomTemperature}
- Target temperature: ${data.SetTemperature}
- OperationMode: ${data.OperationMode}
- Fan speed: ${data.SetFanSpeed}`
+ ${t('data.device')} ${data.name}
+ ${t('data.roomTemperature')} ${data.RoomTemperature}
+ ${t('data.targetTemperature')} ${data.SetTemperature}
+ ${t('data.operationMode')} ${t(`data.operationMode${data.OperationMode}`)} (${data.OperationMode})
+ ${t('data.fanSpeed')} ${data.SetFanSpeed}`
 }
 
 function resolveNumberValue(value: unknown): number {
@@ -51,7 +52,7 @@ export function collectAlerts(data: MELData, device: Device) {
     for (const alert of alerts.filter(alert => alert.deviceIdOrName == device.id || alert.deviceIdOrName == device.name)) {
         const value = resolveNumberValue(alert.value)
         const dataValue = resolveNumberValue(data[alert.key])
-        const msg = message(alert.message, {...device, ...data})
+        const msg = message(t(alert.messageKey, { value, dataValue, device, data }), {...device, ...data})
         switch (alert.operator) {
             case '<':
                 if (dataValue < value) alertMessages.push(msg)
@@ -82,13 +83,13 @@ export function collectAlerts(data: MELData, device: Device) {
     return alertMessages
 }
 
-export async function send(alerts: string[], data?: Device & MELData) {
+export async function send(subject: string, alerts: string[], data?: Device & MELData) {
     const {mail, pushover} = config()
     if (mail && mail.to) {
-        await sendEmail(mail.to, 'MEL Alert', alerts.join('\n'))
+        await sendEmail(mail.to, subject, alerts.join('\n'))
     }
     if (pushover && pushover.token) {
-        await sendNotification('MEL Alert', alerts.join('\n'), data?.name)
+        await sendNotification(subject, alerts.join('\n'), data?.name)
     }
 
 }

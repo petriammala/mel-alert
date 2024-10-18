@@ -1,6 +1,8 @@
 import {readFileSync} from 'fs'
 import {getData, listDevices} from "./data";
 import {runInLoop} from "./loop";
+import i18next, {t} from 'i18next';
+import resources from './config/translations.json'
 
 if (process.argv[3]) {
     readFileSync(process.argv[3])
@@ -19,12 +21,17 @@ const commands = <{[key: string]: () => Promise<void>}>{
 }
 
 function showUsage() {
-    console.info('Usage:')
-    console.info('npx ts-node src/main <command> <env>')
-    console.info('where <command> is one of:', Object.keys(commands).join(', '))
-    console.info('and <env> is environmental variables file, defaults to .env')
+    console.info(t('main.usage'))
+    console.info(t('main.example'))
+    console.info(t('main.exampleExplained', { commands: Object.keys(commands).join(', ') }))
     return Promise.resolve()
 }
 
-const executeCommand = commands[process.argv[2]] ?? commands['usage']
-executeCommand().catch(err => console.error(err))
+
+i18next.init({
+    lng: process.env.LANG ?? 'en',
+    resources
+}).then(() => {
+    const executeCommand = commands[process.argv[2]] ?? commands['usage']
+    executeCommand().catch(err => console.error(err))
+})

@@ -2,6 +2,7 @@ import {LoginData, ErrorData, MELData, Building, OperationModes, DevicesByBuildi
 import {collectAlerts, send} from './alerts'
 import {getJson, postJson} from "./api-client";
 import {config} from "./config/config";
+import {t} from "i18next";
 
 const context = <{lastUsedContextKey?: string}>{}
 
@@ -83,28 +84,28 @@ export async function getData() {
                     devices: building.Structure.Devices.map(device => ({id: device.DeviceID, name: device.DeviceName}))
                 }
         }), {} as DevicesByBuilding)
-    console.info('Checking state of devices')
+    console.info(t('data.checkState'))
     for (const buildingId of Object.keys(devicesByBuilding)) {
-        console.info('Building:', devicesByBuilding[buildingId].name, `(${buildingId})`)
+        console.info(t('data.building'), devicesByBuilding[buildingId].name, `(${buildingId})`)
         for (const device of devicesByBuilding[buildingId].devices) {
-            console.info('Device:', device.name, `(${device.id})`)
+            console.info(t('data.device'), device.name, `(${device.id})`)
             const data = await fetchData(device.id, Number(buildingId))
             const alerts = collectAlerts(data, device)
             const date = new Date()
             const lastCommunication = new Date(`${data.LastCommunication}Z`)
             const nextCommunication = new Date(`${data.NextCommunication}Z`)
-            console.info('Power:', data.Power)
-            console.info('Standby:', data.InStandbyMode)
-            console.info('Room temperature:', data.RoomTemperature)
-            console.info('Target temperature:', data.SetTemperature)
-            console.info('Fan speed:', data.SetFanSpeed)
-            console.info('Operation mode:', OperationModes[data.OperationMode], `(${data.OperationMode})`)
-            console.info('Last communication:', lastCommunication.toLocaleString())
-            console.info('Next communication:', nextCommunication.toLocaleString())
-            console.info('Time now:', date.toLocaleString())
-            console.info('Alerts:', alerts.length ? alerts.join(', ') : '-')
+            console.info(t('data.power'), data.Power)
+            console.info(t('data.standby'), data.InStandbyMode)
+            console.info(t('data.roomTemperature'), data.RoomTemperature)
+            console.info(t('data.targetTemperature'), data.SetTemperature)
+            console.info(t('data.fanSpeed'), data.SetFanSpeed)
+            console.info(t('data.operationMode'), t(`data.operationMode${data.OperationMode}`), `(${data.OperationMode})`)
+            console.info(t('data.lastCommunication'), lastCommunication.toLocaleString())
+            console.info(t('data.nextCommunication'), nextCommunication.toLocaleString())
+            console.info(t('data.timeNow'), date.toLocaleString())
+            console.info(t('data.alerts'), alerts.length ? alerts.join(', ') : '-')
             if (alerts.length) {
-                await send(alerts, {...device, ...data})
+                await send(t('data.alertSubject'), alerts, {...device, ...data})
             }
         }
     }

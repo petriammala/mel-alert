@@ -55,7 +55,7 @@ export type Alert = {
     key: keyof MELData
     operator: '<' | '=' | '==' | '===' | '>' | '<=' | '>=' | '!=' | '!==' | '<>'
     value: unknown
-    message: string
+    messageKey: string
 }
 
 export type Device = {
