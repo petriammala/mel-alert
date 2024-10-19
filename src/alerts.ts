@@ -1,4 +1,4 @@
-import {Device, MELData} from "./types";
+import {Alert, Device, MELData} from "./types";
 import {config} from "./config/config";
 import {sendEmail} from "./emailer";
 import {sendNotification} from "./pushover";
@@ -13,6 +13,34 @@ function message(msg: string, data: Device & MELData) {
  ${t('data.targetTemperature')} ${toTemperatureString(data.SetTemperature)}
  ${t('data.operationMode')} ${t(`data.operationMode${data.OperationMode}`)} (${data.OperationMode})
  ${t('data.fanSpeed')} ${data.SetFanSpeed}`
+}
+
+export function resolveAlerts(env: NodeJS.ProcessEnv) {
+    const alerts = <Alert[]>[]
+    for (const envKey in env) {
+        if (envKey.startsWith('ALERTS_')) {
+            const line =
+                env[envKey].trim().match(/^"?([^"]*)"?:\s+(\w+)\s*([!<>=]+)\s*([\w\$]+)\s+->\s+([\w.]+)$/)
+            try {
+                const [_all, device, key, operator, value, messageKey] = line
+                alerts.push(<Alert>{
+                    deviceIdOrName: stringOrNumber(device),
+                    key,
+                    operator,
+                    value: stringOrNumber(value),
+                    messageKey,
+                })
+            } catch (err) {
+                console.error(err instanceof Error ? err.message : 'Unknown error')
+                throw new Error(`Cannot resolve alert from line \`${env[envKey]}\``)
+            }
+        }
+    }
+    return alerts
+
+    function stringOrNumber(str: unknown) {
+        return Number.isNaN(Number(str)) ? str.toString() : Number(str)
+    }
 }
 
 function resolveNumberValue(value: unknown): number {
@@ -48,7 +76,7 @@ function resolveNumberValue(value: unknown): number {
 }
 
 export function collectAlerts(data: MELData, device: Device) {
-    const {alerts} = config()
+    const alerts = resolveAlerts(process.env)
     const alertMessages = [] as string[]
     for (const alert of alerts.filter(alert => alert.deviceIdOrName == device.id || alert.deviceIdOrName == device.name)) {
         const convertFn = alert.key.toLowerCase().includes('temperature') ? toTemperatureString : (value: number) => value

@@ -78,7 +78,6 @@ export type Config = {
     smtpPassword: string
     melCloudUsername: string
     melCloudPassword: string
-    alerts: Alert[]
     alertIntervalMs: number
     temperatureUnit: TemperatureUnit
     appVersion: string

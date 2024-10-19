@@ -1,5 +1,4 @@
-import {Alert, Config, TemperatureUnit} from "../types";
-import alerts from "./alerts.json";
+import {Config, TemperatureUnit} from "../types";
 
 export function config(): Config {
     return {
@@ -10,7 +9,6 @@ export function config(): Config {
         melCloudUsername: process.env.MELCLOUD_USERNAME,
         melCloudPassword: process.env.MELCLOUD_PASSWORD,
         alertIntervalMs: Number(process.env.ALERT_INTERVAL_MS ?? 10000),
-        alerts: alerts as Alert[],
         temperatureUnit: (process.env.TEMPERATURE_UNIT ?? 'C') as TemperatureUnit,
         appVersion: process.env.MELCLOUD_APPVERSION,
         language: process.env.LANG ?? 'en',
