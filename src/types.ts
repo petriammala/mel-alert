@@ -69,6 +69,7 @@ export type DevicesByBuilding = {
         devices: Device[]
     }
 }
+export type TemperatureUnit =  'C' | 'F'
 
 export type Config = {
     smtpHost: string
@@ -79,6 +80,7 @@ export type Config = {
     melCloudPassword: string
     alerts: Alert[]
     alertIntervalMs: number
+    temperatureUnit: TemperatureUnit
     appVersion: string
     language?: string
     mail?: {

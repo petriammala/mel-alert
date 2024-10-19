@@ -6,6 +6,11 @@ import {t} from "i18next";
 
 const context = <{lastUsedContextKey?: string}>{}
 
+export function toTemperatureString(temperature: number) {
+    const unit = config().temperatureUnit
+    return `${Math.round(10 * (unit == 'F' ? 1.8 * temperature + 32 : temperature)) / 10}°${unit}`
+}
+
 async function login() {
     const {appVersion, language, melCloudUsername, melCloudPassword} = config()
     const loginUrl = 'https://app.melcloud.com/Mitsubishi.Wifi.Client/Login/ClientLogin2'
@@ -96,8 +101,8 @@ export async function getData() {
             const nextCommunication = new Date(`${data.NextCommunication}Z`)
             console.info(t('data.power'), data.Power)
             console.info(t('data.standby'), data.InStandbyMode)
-            console.info(t('data.roomTemperature'), data.RoomTemperature)
-            console.info(t('data.targetTemperature'), data.SetTemperature)
+            console.info(t('data.roomTemperature'), toTemperatureString(data.RoomTemperature))
+            console.info(t('data.targetTemperature'), toTemperatureString(data.SetTemperature))
             console.info(t('data.fanSpeed'), data.SetFanSpeed)
             console.info(t('data.operationMode'), t(`data.operationMode${data.OperationMode}`), `(${data.OperationMode})`)
             console.info(t('data.lastCommunication'), lastCommunication.toLocaleString())

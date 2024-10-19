@@ -3,13 +3,14 @@ import {config} from "./config/config";
 import {sendEmail} from "./emailer";
 import {sendNotification} from "./pushover";
 import {t} from "i18next";
+import {toTemperatureString} from "./data";
 
 function message(msg: string, data: Device & MELData) {
     return `${msg}
 
  ${t('data.device')} ${data.name}
- ${t('data.roomTemperature')} ${data.RoomTemperature}
- ${t('data.targetTemperature')} ${data.SetTemperature}
+ ${t('data.roomTemperature')} ${toTemperatureString(data.RoomTemperature)}
+ ${t('data.targetTemperature')} ${toTemperatureString(data.SetTemperature)}
  ${t('data.operationMode')} ${t(`data.operationMode${data.OperationMode}`)} (${data.OperationMode})
  ${t('data.fanSpeed')} ${data.SetFanSpeed}`
 }
@@ -50,9 +51,12 @@ export function collectAlerts(data: MELData, device: Device) {
     const {alerts} = config()
     const alertMessages = [] as string[]
     for (const alert of alerts.filter(alert => alert.deviceIdOrName == device.id || alert.deviceIdOrName == device.name)) {
-        const value = resolveNumberValue(alert.value)
-        const dataValue = resolveNumberValue(data[alert.key])
-        const msg = message(t(alert.messageKey, { value, dataValue, device, data }), {...device, ...data})
+        const convertFn = alert.key.toLowerCase().includes('temperature') ? toTemperatureString : (value: number) => value
+        const value = alert.value
+        const convertedValue = convertFn(resolveNumberValue(value))
+        const dataValue = data[alert.key]
+        const convertedDataValue = convertFn(resolveNumberValue(data[alert.key]))
+        const msg = message(t(alert.messageKey, { value: convertedValue, dataValue: convertedDataValue, device, data }), {...device, ...data})
         switch (alert.operator) {
             case '<':
                 if (dataValue < value) alertMessages.push(msg)
