@@ -30,8 +30,8 @@
         "exampleExplained": "\twhere <command> is one of: {{commands}}\n\tand <env> is environmental variables file, defaults to .env"
       },
       "alert": {
-        "temperatureBelow": "Temperature under {{value}}°C",
-        "temperatureAbove": "Temperature above {{value}}°C",
+        "temperatureBelow": "Temperature under {{value}}",
+        "temperatureAbove": "Temperature above {{value}}",
         "noCommunicationToday": "No communication with the device today"
       }
     }
@@ -67,8 +67,8 @@
         "exampleExplained": "\tmissä <command> on yksi seuraavista: {{commands}}\n\tja <env> is ympäristömuuttujatiedosto, oletuksena .env"
       },
       "alert": {
-        "temperatureBelow": "Lämpötila alle {{value}}°C",
-        "temperatureAbove": "Lämpötila yli {{value}}°C",
+        "temperatureBelow": "Lämpötila alle {{value}}",
+        "temperatureAbove": "Lämpötila yli {{value}}",
         "noCommunicationToday": "Ei yhteyttä laitteeseen tänään"
       }
     }
