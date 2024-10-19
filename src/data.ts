@@ -1,4 +1,4 @@
-import {LoginData, ErrorData, MELData, Building, OperationModes, DevicesByBuilding} from "./types";
+import {LoginData, ErrorData, MELData, Building, DevicesByBuilding} from "./types";
 import {collectAlerts, send} from './alerts'
 import {getJson, postJson} from "./api-client";
 import {config} from "./config/config";

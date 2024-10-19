@@ -10,7 +10,7 @@ export type ErrorData = {
     LoginAttempts: number
 }
 
-export enum OperationModes {
+enum OperationModes {
     Unknown, Heat, Dry, Cool, Fan = 7, Auto
 }
 
