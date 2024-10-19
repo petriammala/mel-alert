@@ -7,8 +7,9 @@ import {t} from "i18next";
 const context = <{lastUsedContextKey?: string}>{}
 
 export function toTemperatureString(temperature: number) {
-    const unit = config().temperatureUnit
-    return `${Math.round(10 * (unit == 'F' ? 1.8 * temperature + 32 : temperature)) / 10}°${unit}`
+    const {temperatureUnit, language} = config()
+    const convertedTemperature = Math.round(10 * (temperatureUnit == 'F' ? 1.8 * temperature + 32 : temperature)) / 10
+    return `${convertedTemperature.toLocaleString(language)}°${temperatureUnit}`
 }
 
 async function login() {
@@ -90,6 +91,7 @@ export async function getData() {
                 }
         }), {} as DevicesByBuilding)
     console.info(t('data.checkState'))
+    const {language} = config()
     for (const buildingId of Object.keys(devicesByBuilding)) {
         console.info(t('data.building'), devicesByBuilding[buildingId].name, `(${buildingId})`)
         for (const device of devicesByBuilding[buildingId].devices) {
@@ -105,9 +107,9 @@ export async function getData() {
             console.info(t('data.targetTemperature'), toTemperatureString(data.SetTemperature))
             console.info(t('data.fanSpeed'), data.SetFanSpeed)
             console.info(t('data.operationMode'), t(`data.operationMode${data.OperationMode}`), `(${data.OperationMode})`)
-            console.info(t('data.lastCommunication'), lastCommunication.toLocaleString())
-            console.info(t('data.nextCommunication'), nextCommunication.toLocaleString())
-            console.info(t('data.timeNow'), date.toLocaleString())
+            console.info(t('data.lastCommunication'), lastCommunication.toLocaleString(language))
+            console.info(t('data.nextCommunication'), nextCommunication.toLocaleString(language))
+            console.info(t('data.timeNow'), date.toLocaleString(language))
             console.info(t('data.alerts'), alerts.length ? alerts.join(', ') : '-')
             if (alerts.length) {
                 await send(t('data.alertSubject'), alerts, {...device, ...data})

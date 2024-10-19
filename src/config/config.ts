@@ -13,6 +13,7 @@ export function config(): Config {
         alerts: alerts as Alert[],
         temperatureUnit: (process.env.TEMPERATURE_UNIT ?? 'C') as TemperatureUnit,
         appVersion: process.env.MELCLOUD_APPVERSION,
+        language: process.env.LANG ?? 'en',
         mail: {
             from: process.env.MAIL_FROM,
             to: process.env.MAIL_TO?.split(','),

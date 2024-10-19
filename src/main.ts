@@ -3,6 +3,7 @@ import {getData, listDevices} from "./data";
 import {runInLoop} from "./loop";
 import i18next, {t} from 'i18next';
 import resources from './config/translations.json'
+import {config} from "./config/config";
 
 if (process.argv[3]) {
     readFileSync(process.argv[3])
@@ -29,7 +30,7 @@ function showUsage() {
 
 
 i18next.init({
-    lng: process.env.LANG ?? 'en',
+    lng: config().language,
     resources
 }).then(() => {
     const executeCommand = commands[process.argv[2]] ?? commands['usage']
