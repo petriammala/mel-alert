@@ -37,7 +37,7 @@ function isErrorData(data: LoginData | MELData | ErrorData): data is ErrorData {
 
 async function withRetries<T>(fn: () => Promise<T>, retryCount: number = 2, resetContextKeyOnFailure: boolean = true) {
     if (retryCount < 0) {
-        throw new Error(`Function ${fn} failed too many times`)
+        throw new Error(`Function ${fn.name} failed too many times`)
     }
     try {
         const returnValue = await fn() // needs to be awaited to catch possible errors
@@ -53,7 +53,7 @@ async function withRetries<T>(fn: () => Promise<T>, retryCount: number = 2, rese
 }
 
 async function fetchData(id: number, buildingId: number) {
-    return withRetries(async () => {
+    async function fetchData() {
         const contextKey = context.lastUsedContextKey ?? await login()
         const fetchDataUrl = `https://app.melcloud.com/Mitsubishi.Wifi.Client/Device/Get?id=${id}&buildingID=${buildingId}`
         const res = await getJson<MELData | ErrorData>(fetchDataUrl, {'X-MitsContextKey': contextKey})
@@ -62,14 +62,16 @@ async function fetchData(id: number, buildingId: number) {
         } else {
             return res
         }
-    })
+    }
+    return withRetries(fetchData)
 }
 
 export async function getDevices() {
-    return withRetries(async () => {
+    async function getDevices() {
         const contextKey = context.lastUsedContextKey ?? await login()
         return getJson<Building[]>('https://app.melcloud.com/Mitsubishi.Wifi.Client/User/ListDevices', {'X-MitsContextKey': contextKey})
-    })
+    }
+    return withRetries(getDevices)
 }
 
 export async function listDevices() {
