@@ -52,9 +52,7 @@ export type MELData = {
 
 export type Alert = {
     deviceIdOrName: number | string
-    key: keyof MELData
-    operator: '<' | '=' | '==' | '===' | '>' | '<=' | '>=' | '!=' | '!==' | '<>'
-    value: unknown
+    condition: string
     messageKey: string
 }
 

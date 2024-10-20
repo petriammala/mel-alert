@@ -19,97 +19,33 @@ export function resolveAlerts(env: NodeJS.ProcessEnv) {
     const alerts = <Alert[]>[]
     for (const envKey in env) {
         if (envKey.startsWith('ALERTS_')) {
-            const line =
-                env[envKey].trim().match(/^"?([^"]*)"?:\s+(\w+)\s*([!<>=]+)\s*([\w\$]+)\s+->\s+([\w.]+)$/)
-            try {
-                const [_all, device, key, operator, value, messageKey] = line
-                alerts.push(<Alert>{
-                    deviceIdOrName: stringOrNumber(device),
-                    key,
-                    operator,
-                    value: stringOrNumber(value),
-                    messageKey,
-                })
-            } catch (err) {
-                console.error(err instanceof Error ? err.message : 'Unknown error')
-                throw new Error(`Cannot resolve alert from line \`${env[envKey]}\``)
+            const [deviceWithCondition, messageKey] = env[envKey].split('->').map(s => s.trim())
+            const [device, condition] = deviceWithCondition.split(':').map(s => s.trim())
+            if ([device, condition, messageKey].includes(undefined)) {
+                throw new Error(`Unable to interpret alert (${env[envKey]})`)
             }
+            alerts.push(<Alert>{
+                deviceIdOrName: stringOrNumber(device),
+                condition,
+                messageKey,
+            })
         }
     }
     return alerts
 
     function stringOrNumber(str: unknown) {
-        return Number.isNaN(Number(str)) ? str.toString() : Number(str)
+        const n = Number(str)
+        return Number.isNaN(n) ? str.toString() : n
     }
-}
-
-function resolveNumberValue(value: unknown): number {
-    if (typeof value == 'number') {
-        return value
-    }
-    if (typeof value == 'boolean') {
-        return value ? 1 : 0
-    }
-    if (typeof value == 'string') {
-        const dateValue = new Date(`${value}Z`)
-        if (dateValue.toString() != 'Invalid Date' ) {
-            return dateValue.getTime()
-        }
-        const now = new Date()
-        switch (value) {
-            case '$yesterday': {
-                const yesterday = new Date(now.getFullYear(),now.getMonth(),now.getDate() - 1)
-                return yesterday.getTime()
-            }
-            case '$today': {
-                const today = new Date(now.getFullYear(),now.getMonth(),now.getDate())
-                return today.getTime()
-            }
-            case 'tomorrow': {
-                const tomorrow = new Date(now.getFullYear(),now.getMonth(),now.getDate() + 1)
-                return tomorrow.getTime()
-            }
-            case '$now': return now.getTime()
-        }
-    }
-    throw new Error(`Unable to resolve number value for ${JSON.stringify(value)}`)
 }
 
 export function collectAlerts(data: MELData, device: Device) {
     const alerts = resolveAlerts(process.env)
-    const alertMessages = [] as string[]
+    const alertMessages = <string[]>[]
     for (const alert of alerts.filter(alert => alert.deviceIdOrName == device.id || alert.deviceIdOrName == device.name)) {
-        const convertFn = alert.key.toLowerCase().includes('temperature') ? toTemperatureString : (value: number) => value
-        const value = alert.value
-        const convertedValue = convertFn(resolveNumberValue(value))
-        const dataValue = data[alert.key]
-        const convertedDataValue = convertFn(resolveNumberValue(data[alert.key]))
-        const msg = message(t(alert.messageKey, { value: convertedValue, dataValue: convertedDataValue, device, data }), {...device, ...data})
-        switch (alert.operator) {
-            case '<':
-                if (dataValue < value) alertMessages.push(msg)
-                break
-            case '===':
-            case '==':
-            case '=':
-                if (dataValue == value) alertMessages.push(msg)
-                break
-            case '>':
-                if (dataValue > value) alertMessages.push(msg)
-                break
-            case '<=':
-                if (dataValue <= value) alertMessages.push(msg)
-                break
-            case '>=':
-                if (dataValue >= value) alertMessages.push(msg)
-                break
-            case '!==':
-            case '!=':
-            case '<>':
-                if (dataValue != value) alertMessages.push(msg)
-                break
-            default:
-                throw new Error(`Unknown operator: ${alert.operator}`)
+        if (new Function(`return ${alert.condition}`).call(data)) {
+            const msg = message(t(alert.messageKey, { device, data, alert }), {...device, ...data})
+            alertMessages.push(msg)
         }
     }
     return alertMessages

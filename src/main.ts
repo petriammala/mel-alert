@@ -9,10 +9,12 @@ if (process.argv[3]) {
     readFileSync(process.argv[3])
         .toString()
         .split('\n')
-        .filter(line => line.trim() != '' && !line.startsWith('#'))
-        .map(line => line.split('='))
-        .forEach(([name, value]) => process.env[name] = value)
+        .map(line => line.trim())
+        .filter(line => line != '' && !line.startsWith('#'))
+        .map(line => line.split(/=(.*)/s).map(part => part.trim()))
+        .forEach(([name, value]) => process.env[name] = value.replace(/^"?([^"]*)"?$/, '$1'))
 }
+
 const commands = <{[key: string]: () => Promise<void>}>{
     data: getData,
     loop: runInLoop,

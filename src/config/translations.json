@@ -30,9 +30,11 @@
         "exampleExplained": "\twhere <command> is one of: {{commands}}\n\tand <env> is environmental variables file, defaults to .env"
       },
       "alert": {
-        "temperatureBelow": "Temperature under {{value}}",
-        "temperatureAbove": "Temperature above {{value}}",
-        "noCommunicationToday": "No communication with the device today"
+        "temperatureBelow": "Temperature below target ({{- alert.condition}})",
+        "temperatureAbove": "Temperature above target ({{- alert.condition}})",
+        "noCommunicationToday": "No communication with the device today",
+        "coolingModeInWinter": "Cooling in winter months is pointless",
+        "heatingModeInSummer": "Heating in summer months is pointless"
       }
     }
   },
@@ -67,9 +69,11 @@
         "exampleExplained": "\tmissä <command> on yksi seuraavista: {{commands}}\n\tja <env> is ympäristömuuttujatiedosto, oletuksena .env"
       },
       "alert": {
-        "temperatureBelow": "Lämpötila alle {{value}}",
-        "temperatureAbove": "Lämpötila yli {{value}}",
-        "noCommunicationToday": "Ei yhteyttä laitteeseen tänään"
+        "temperatureBelow": "Lämpötila alle tavoitteen ({{- alert.condition}})",
+        "temperatureAbove": "Lämpötila yli tavoitteen ({{- alert.condition}})",
+        "noCommunicationToday": "Ei yhteyttä laitteeseen tänään",
+        "coolingModeInWinter": "Viilennys lämmityskuukausina ei ole järkevää",
+        "heatingModeInSummer": "Lämmitys kesäkuukausina ei ole järkevää"
       }
     }
   }
