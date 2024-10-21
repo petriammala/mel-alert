@@ -3,17 +3,6 @@ import {config} from "./config/config";
 import {sendEmail} from "./emailer";
 import {sendNotification} from "./pushover";
 import {t} from "i18next";
-import {toTemperatureString} from "./data";
-
-function message(msg: string, data: Device & MELData) {
-    return `${msg}
-
- ${t('data.device')} ${data.name}
- ${t('data.roomTemperature')} ${toTemperatureString(data.RoomTemperature)}
- ${t('data.targetTemperature')} ${toTemperatureString(data.SetTemperature)}
- ${t('data.operationMode')} ${t(`data.operationMode${data.OperationMode}`)} (${data.OperationMode})
- ${t('data.fanSpeed')} ${data.SetFanSpeed}`
-}
 
 export function resolveAlerts(env: NodeJS.ProcessEnv) {
     const alerts = <Alert[]>[]
@@ -44,8 +33,7 @@ export function collectAlerts(data: MELData, device: Device) {
     const alertMessages = <string[]>[]
     for (const alert of alerts.filter(alert => alert.deviceIdOrName == device.id || alert.deviceIdOrName == device.name)) {
         if (new Function(`return ${alert.condition}`).call(data)) {
-            const msg = message(t(alert.messageKey, { device, data, alert }), {...device, ...data})
-            alertMessages.push(msg)
+            alertMessages.push(t(alert.messageKey, { device, data, alert }))
         }
     }
     return alertMessages

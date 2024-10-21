@@ -1,4 +1,4 @@
-import {LoginData, ErrorData, MELData, Building, DevicesByBuilding} from "./types";
+import {LoginData, ErrorData, MELData, Building, DevicesByBuilding, Device} from "./types";
 import {collectAlerts, send} from './alerts'
 import {getJson, postJson} from "./api-client";
 import {config} from "./config/config";
@@ -83,6 +83,25 @@ export async function listDevices() {
     }
 }
 
+export function dataDetails(data?: Device & MELData) {
+    if (!data) {
+        return ''
+    }
+    const {language} = config()
+    const date = new Date()
+    const lastCommunication = new Date(`${data.LastCommunication}Z`)
+    const nextCommunication = new Date(`${data.NextCommunication}Z`)
+    return `${t('data.power')} ${data.Power}
+${t('data.standby')} ${data.InStandbyMode}
+${t('data.roomTemperature')} ${toTemperatureString(data.RoomTemperature)}
+${t('data.targetTemperature')} ${toTemperatureString(data.SetTemperature)}
+${t('data.fanSpeed')} ${data.SetFanSpeed}
+${t('data.operationMode')} ${t(`data.operationMode${data.OperationMode}`)} (${data.OperationMode})
+${t('data.lastCommunication')} ${lastCommunication.toLocaleString(language)}
+${t('data.nextCommunication')} ${nextCommunication.toLocaleString(language)}
+${t('data.timeNow')} ${date.toLocaleString(language)}`
+}
+
 export async function getData() {
     const devicesByBuilding = (await getDevices())
         .reduce((acc, building) => ({
@@ -97,24 +116,13 @@ export async function getData() {
     for (const buildingId of Object.keys(devicesByBuilding)) {
         console.info(t('data.building'), devicesByBuilding[buildingId].name, `(${buildingId})`)
         for (const device of devicesByBuilding[buildingId].devices) {
-            console.info(t('data.device'), device.name, `(${device.id})`)
             const data = await fetchData(device.id, Number(buildingId))
             const alerts = collectAlerts(data, device)
-            const date = new Date()
-            const lastCommunication = new Date(`${data.LastCommunication}Z`)
-            const nextCommunication = new Date(`${data.NextCommunication}Z`)
-            console.info(t('data.power'), data.Power)
-            console.info(t('data.standby'), data.InStandbyMode)
-            console.info(t('data.roomTemperature'), toTemperatureString(data.RoomTemperature))
-            console.info(t('data.targetTemperature'), toTemperatureString(data.SetTemperature))
-            console.info(t('data.fanSpeed'), data.SetFanSpeed)
-            console.info(t('data.operationMode'), t(`data.operationMode${data.OperationMode}`), `(${data.OperationMode})`)
-            console.info(t('data.lastCommunication'), lastCommunication.toLocaleString(language))
-            console.info(t('data.nextCommunication'), nextCommunication.toLocaleString(language))
-            console.info(t('data.timeNow'), date.toLocaleString(language))
+            console.info(t('data.device'), device.name, `(${device.id})`)
+            console.info(dataDetails({...device, ...data}))
             console.info(t('data.alerts'), alerts.length ? alerts.join(', ') : '-')
             if (alerts.length) {
-                await send(t('data.alertSubject'), alerts, {...device, ...data})
+                await send(t('data.alertSubject'), alerts.concat(['', dataDetails({...data, ...device})]), {...device, ...data})
             }
         }
     }
