@@ -60,7 +60,11 @@ async function fetchData(id: number, buildingId: number) {
         if (isErrorData(res)) {
             throw new Error(res.ErrorMessage)
         } else {
-            return res
+            return {
+                ...res,
+                LastCommunication: new Date(`${res.LastCommunication}Z`),
+                NextCommunication: new Date(`${res.NextCommunication}Z`)
+            }
         }
     }
     return withRetries(fetchData)
@@ -89,16 +93,14 @@ export function dataDetails(data?: Device & MELData) {
     }
     const {language} = config()
     const date = new Date()
-    const lastCommunication = new Date(`${data.LastCommunication}Z`)
-    const nextCommunication = new Date(`${data.NextCommunication}Z`)
     return `${t('data.power')} ${data.Power}
 ${t('data.standby')} ${data.InStandbyMode}
 ${t('data.roomTemperature')} ${toTemperatureString(data.RoomTemperature)}
 ${t('data.targetTemperature')} ${toTemperatureString(data.SetTemperature)}
 ${t('data.fanSpeed')} ${data.SetFanSpeed}
 ${t('data.operationMode')} ${t(`data.operationMode${data.OperationMode}`)} (${data.OperationMode})
-${t('data.lastCommunication')} ${lastCommunication.toLocaleString(language)}
-${t('data.nextCommunication')} ${nextCommunication.toLocaleString(language)}
+${t('data.lastCommunication')} ${data.LastCommunication.toLocaleString(language)}
+${t('data.nextCommunication')} ${data.NextCommunication.toLocaleString(language)}
 ${t('data.timeNow')} ${date.toLocaleString(language)}`
 }
 

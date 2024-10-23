@@ -41,8 +41,8 @@ export type MELData = {
     DemandPercentage: number
     DeviceID: number
     DeviceType: number
-    LastCommunication: string
-    NextCommunication: string
+    LastCommunication: Date
+    NextCommunication: Date
     Power: boolean
     HasPendingCommand: boolean
     Offline: false

@@ -32,7 +32,7 @@
       "alert": {
         "temperatureBelow": "Temperature below target ({{- alert.condition}})",
         "temperatureAbove": "Temperature above target ({{- alert.condition}})",
-        "noCommunicationToday": "No communication with the device today",
+        "noCommunication": "No recent communication with the device",
         "coolingModeInWinter": "Cooling in winter months is pointless",
         "heatingModeInSummer": "Heating in summer months is pointless"
       }
@@ -71,7 +71,7 @@
       "alert": {
         "temperatureBelow": "Lämpötila alle tavoitteen ({{- alert.condition}})",
         "temperatureAbove": "Lämpötila yli tavoitteen ({{- alert.condition}})",
-        "noCommunicationToday": "Ei yhteyttä laitteeseen tänään",
+        "noCommunication": "Ei yhteyttä laitteeseen",
         "coolingModeInWinter": "Viilennys lämmityskuukausina ei ole järkevää",
         "heatingModeInSummer": "Lämmitys kesäkuukausina ei ole järkevää"
       }
