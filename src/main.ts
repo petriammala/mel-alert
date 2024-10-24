@@ -1,5 +1,5 @@
 import {readFileSync} from 'fs'
-import {getData, listDevices} from "./data";
+import {getData, getRawData, listDevices} from "./data";
 import {runInLoop} from "./loop";
 import i18next, {t} from 'i18next';
 import resources from './config/translations.json'
@@ -16,6 +16,7 @@ if (process.argv[3]) {
 }
 
 const commands = <{[key: string]: () => Promise<void>}>{
+    raw: getRawData,
     data: getData,
     loop: runInLoop,
     buildings: listDevices,

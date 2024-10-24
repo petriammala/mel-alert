@@ -59,6 +59,7 @@ export type Alert = {
 export type Device = {
     id: number
     name: string
+    data?: MELData
 }
 
 export type DevicesByBuilding = {

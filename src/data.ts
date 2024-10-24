@@ -59,13 +59,12 @@ async function fetchData(id: number, buildingId: number) {
         const res = await getJson<MELData | ErrorData>(fetchDataUrl, {'X-MitsContextKey': contextKey})
         if (isErrorData(res)) {
             throw new Error(res.ErrorMessage)
-        } else {
-            return {
-                ...res,
-                LastCommunication: new Date(`${res.LastCommunication}Z`),
-                NextCommunication: new Date(`${res.NextCommunication}Z`)
-            }
         }
+        return {
+            ...res,
+            LastCommunication: new Date(`${res.LastCommunication}Z`),
+            NextCommunication: new Date(`${res.NextCommunication}Z`)
+        } as MELData
     }
     return withRetries(fetchData)
 }
@@ -87,7 +86,8 @@ export async function listDevices() {
     }
 }
 
-export function dataDetails(data?: Device & MELData) {
+export function dataDetails(device: Device) {
+    const {data} = device
     if (!data) {
         return ''
     }
@@ -104,27 +104,43 @@ ${t('data.nextCommunication')} ${data.NextCommunication.toLocaleString(language)
 ${t('data.timeNow')} ${date.toLocaleString(language)}`
 }
 
-export async function getData() {
+async function rawData() {
     const devicesByBuilding = (await getDevices())
         .reduce((acc, building) => ({
-                ...acc,
-                [building.ID]: {
-                    name: building.Name,
-                    devices: building.Structure.Devices.map(device => ({id: device.DeviceID, name: device.DeviceName}))
-                }
+            ...acc,
+            [building.ID.toString()]: {
+                name: building.Name,
+                devices: building.Structure.Devices.map(device => ({
+                    id: device.DeviceID,
+                    name: device.DeviceName
+                } as Device))
+            }
         }), {} as DevicesByBuilding)
+    for (const buildingId of Object.keys(devicesByBuilding)) {
+        for (const device of devicesByBuilding[buildingId].devices) {
+            device.data = await fetchData(device.id, Number(buildingId))
+        }
+    }
+    return devicesByBuilding
+}
+
+export async function getRawData() {
+    console.info(JSON.stringify(await rawData(), null,2))
+    return Promise.resolve()
+}
+
+export async function getData() {
     console.info(t('data.checkState'))
-    const {language} = config()
+    const devicesByBuilding = await rawData()
     for (const buildingId of Object.keys(devicesByBuilding)) {
         console.info(t('data.building'), devicesByBuilding[buildingId].name, `(${buildingId})`)
         for (const device of devicesByBuilding[buildingId].devices) {
-            const data = await fetchData(device.id, Number(buildingId))
-            const alerts = collectAlerts(data, device)
+            const alerts = collectAlerts(device)
             console.info(t('data.device'), device.name, `(${device.id})`)
-            console.info(dataDetails({...device, ...data}))
+            console.info(dataDetails(device))
             console.info(t('data.alerts'), alerts.length ? alerts.join(', ') : '-')
             if (alerts.length) {
-                await send(t('data.alertSubject'), alerts.concat(['', dataDetails({...data, ...device})]), {...device, ...data})
+                await send(t('data.alertSubject'), alerts.concat(['', dataDetails(device)]), device.name)
             }
         }
     }
