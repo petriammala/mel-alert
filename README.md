@@ -14,13 +14,11 @@ MELCLOUD_USERNAME=<melcloud username>
 MELCLOUD_PASSWORD=<melcloud password>
 MELCLOUD_APPVERSION=1.34.11.0
 ```
-If you don't want to receive emails or pushover notifications,
+If you don't want to receive emails or pushover notifications about alerts,
 you can drop environment optional variables.
 Also make sure that Melcloud application version is correct.
 
-Edit file [alerts.json](./src/config/alerts.json) to create
-alerts you might be interested in. The file has few examples
-how to create them.
+There are few examples how to create alert in the [.env](./.env) file.
 
 #### How to find building id and device ids
 
