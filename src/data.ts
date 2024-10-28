@@ -46,8 +46,7 @@ async function withRetries<T>(fn: () => Promise<T>, retryCount: number = 2, rese
         if (resetContextKeyOnFailure) {
             context.lastUsedContextKey = undefined
         }
-        console.error('Error', err instanceof Error ? err.message : 'Unknown error')
-        console.info('Retrying...')
+        console.error('Error', err instanceof Error ? err.message : 'Unknown error', ':', t('data.retry'))
         return withRetries(fn, retryCount - 1)
     }
 }

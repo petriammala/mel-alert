@@ -2,6 +2,7 @@
   "en": {
     "translation": {
       "data": {
+        "retry": "Retrying...",
         "checkState": "Checking state of devices",
         "building": "Building:",
         "device": "Device:",
@@ -41,6 +42,7 @@
   "fi": {
     "translation": {
       "data": {
+        "retry": "Yritetään uudelleen...",
         "checkState": "Tarkistetaan laitteiden tila",
         "building": "Rakennus:",
         "device": "Laite:",
