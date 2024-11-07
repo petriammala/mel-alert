@@ -67,3 +67,5 @@ While the container is up and running, you can run commands from your host syste
 For example getting raw data from the cloud, run
 
 `docker exec --env-file ./.env -it mel-alert npx ts-node ./main.ts raw`.
+
+See [commands.ts](./src/commands.ts) for supported commands.

@@ -1,9 +1,8 @@
 import {readFileSync} from 'fs'
-import {getData, getRawData, listDevices} from "./data";
-import {runInLoop} from "./loop";
 import i18next, {t} from 'i18next';
 import resources from './config/translations.json'
 import {config} from "./config/config";
+import {commands} from "./commands";
 
 if (process.argv[3]) {
     readFileSync(process.argv[3])
@@ -14,23 +13,6 @@ if (process.argv[3]) {
         .map(line => line.split(/=(.*)/s).map(part => part.trim()))
         .forEach(([name, value]) => process.env[name] = value.replace(/^"?([^"]*)"?$/, '$1'))
 }
-
-const commands = <{[key: string]: () => Promise<void>}>{
-    raw: getRawData,
-    data: getData,
-    loop: runInLoop,
-    buildings: listDevices,
-    devices: listDevices,
-    usage: showUsage
-}
-
-function showUsage() {
-    console.info(t('main.usage'))
-    console.info(t('main.example'))
-    console.info(t('main.exampleExplained', { commands: Object.keys(commands).join(', ') }))
-    return Promise.resolve()
-}
-
 
 i18next.init({
     lng: config().language,
