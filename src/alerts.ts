@@ -9,7 +9,10 @@ export function resolveAlerts(env: NodeJS.ProcessEnv) {
     for (const envKey in env) {
         if (envKey.startsWith('ALERTS_')) {
             const [deviceWithCondition, messageKey] = env[envKey].split('->').map(s => s.trim())
-            const [device, condition] = deviceWithCondition.split(':').map(s => s.trim())
+            const [device, condition] = deviceWithCondition
+                .replace(/^"|"$/g, '')
+                .split(':')
+                .map(s => s.trim())
             if ([device, condition, messageKey].includes(undefined)) {
                 throw new Error(`Unable to interpret alert (${env[envKey]})`)
             }
