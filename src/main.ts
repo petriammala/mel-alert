@@ -3,15 +3,10 @@ import i18next, {t} from 'i18next';
 import resources from './config/translations.json'
 import {config} from "./config/config";
 import {commands} from "./commands";
+import dotenv from "dotenv";
 
 if (process.argv[3]) {
-    readFileSync(process.argv[3])
-        .toString()
-        .split('\n')
-        .map(line => line.trim())
-        .filter(line => line != '' && !line.startsWith('#'))
-        .map(line => line.split(/=(.*)/s).map(part => part.trim()))
-        .forEach(([name, value]) => process.env[name] = value.replace(/^"?([^"]*)"?$/, '$1'))
+    dotenv.config({path: process.argv[3]})
 }
 
 i18next.init({
