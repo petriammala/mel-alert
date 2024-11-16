@@ -92,7 +92,8 @@ export function dataDetails(device: Device) {
     }
     const {language} = config()
     const date = new Date()
-    return `${t('data.power')} ${data.Power}
+    return `${t('data.device')} ${device.name} (${device.id})
+${t('data.power')} ${data.Power}
 ${t('data.standby')} ${data.InStandbyMode}
 ${t('data.roomTemperature')} ${toTemperatureString(data.RoomTemperature)}
 ${t('data.targetTemperature')} ${toTemperatureString(data.SetTemperature)}
@@ -135,7 +136,6 @@ export async function getData() {
         console.info(t('data.building'), devicesByBuilding[buildingId].name, `(${buildingId})`)
         for (const device of devicesByBuilding[buildingId].devices) {
             const alerts = collectAlerts(device)
-            console.info(t('data.device'), device.name, `(${device.id})`)
             console.info(dataDetails(device))
             console.info(t('data.alerts'), alerts.length ? alerts.join(', ') : '-')
             if (alerts.length) {
