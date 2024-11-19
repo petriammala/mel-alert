@@ -9,17 +9,17 @@ export function resolveAlerts(env: NodeJS.ProcessEnv) {
     for (const envKey in env) {
         if (envKey.startsWith('ALERTS_')) {
             const alertWithoutQuotes = env[envKey].replace(/^"|"$/g, '')
-            const [deviceWithCondition, messageKey] = alertWithoutQuotes.split('->').map(s => s.trim())
+            const [deviceWithCondition, message] = alertWithoutQuotes.split('->').map(s => s.trim())
             const [device, condition] = deviceWithCondition
                 .split(':')
                 .map(s => s.trim())
-            if ([device, condition, messageKey].includes(undefined)) {
+            if ([device, condition, message].includes(undefined)) {
                 throw new Error(`Unable to interpret alert (${env[envKey]})`)
             }
             alerts.push(<Alert>{
                 deviceIdOrName: stringOrNumber(device),
                 condition,
-                messageKey,
+                message,
             })
         }
     }
@@ -36,7 +36,7 @@ export function collectAlerts(device: Device) {
     const alertMessages = <string[]>[]
     for (const alert of alerts.filter(alert => alert.deviceIdOrName == device.id || alert.deviceIdOrName == device.name)) {
         if (new Function(`return ${alert.condition}`).call(device.data)) {
-            alertMessages.push(t(alert.messageKey, { device, alert }))
+            alertMessages.push(t(alert.message, { device, alert }))
         }
     }
     return alertMessages

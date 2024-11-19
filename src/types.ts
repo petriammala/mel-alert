@@ -53,7 +53,7 @@ export type MELData = {
 export type Alert = {
     deviceIdOrName: number | string
     condition: string
-    messageKey: string
+    message: string
 }
 
 export type Device = {

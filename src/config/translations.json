@@ -29,13 +29,6 @@
         "usage": "Usage:",
         "example": "\tnpx ts-node src/main <command> <env>\n",
         "exampleExplained": "\twhere <command> is one of: {{commands}}\n\tand <env> is environmental variables file, defaults to .env"
-      },
-      "alert": {
-        "temperatureBelow": "Temperature below target ({{- alert.condition}})",
-        "temperatureAbove": "Temperature above target ({{- alert.condition}})",
-        "noCommunication": "No recent communication with the device",
-        "coolingModeInWinter": "Cooling in winter months is pointless",
-        "heatingModeInSummer": "Heating in summer months is pointless"
       }
     }
   },
@@ -69,13 +62,6 @@
         "usage": "Käyttö:",
         "example": "\tnpx ts-node src/main <command> <env>\n",
         "exampleExplained": "\tmissä <command> on yksi seuraavista: {{commands}}\n\tja <env> is ympäristömuuttujatiedosto, oletuksena .env"
-      },
-      "alert": {
-        "temperatureBelow": "Lämpötila alle tavoitteen ({{- alert.condition}})",
-        "temperatureAbove": "Lämpötila yli tavoitteen ({{- alert.condition}})",
-        "noCommunication": "Ei yhteyttä laitteeseen",
-        "coolingModeInWinter": "Viilennys lämmityskuukausina ei ole järkevää",
-        "heatingModeInSummer": "Lämmitys kesäkuukausina ei ole järkevää"
       }
     }
   }
