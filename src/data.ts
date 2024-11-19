@@ -96,7 +96,7 @@ export function dataDetails(device: Device) {
 ${t('data.power')} ${data.Power}
 ${t('data.standby')} ${data.InStandbyMode}
 ${t('data.roomTemperature')} ${toTemperatureString(data.RoomTemperature)}
-${t('data.targetTemperature')} ${toTemperatureString(data.SetTemperature)}
+${t('data.setTemperature')} ${toTemperatureString(data.SetTemperature)}
 ${t('data.fanSpeed')} ${data.SetFanSpeed}
 ${t('data.operationMode')} ${t(`data.operationMode${data.OperationMode}`)} (${data.OperationMode})
 ${t('data.lastCommunication')} ${data.LastCommunication.toLocaleString(language)}
