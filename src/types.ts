@@ -70,25 +70,29 @@ export type DevicesByBuilding = {
 }
 export type TemperatureUnit =  'C' | 'F'
 
-export type Config = {
+export type MailOptions = {
     smtpHost: string
     smtpPort: number
     smtpUsername: string
     smtpPassword: string
+    from: string
+    to: string[]
+}
+
+export type PushoverOptions = {
+    token: string
+    user: string
+}
+
+export type Config = {
     melCloudUsername: string
     melCloudPassword: string
     alertIntervalMs: number
     temperatureUnit: TemperatureUnit
     appVersion: string
     language?: string
-    mail?: {
-        from: string
-        to: string[]
-    }
-    pushover?: {
-        token: string
-        user: string
-    }
+    mail?: MailOptions
+    pushover?: PushoverOptions
 }
 
 export type Building = {

@@ -44,11 +44,11 @@ export function collectAlerts(device: Device) {
 
 export async function send(subject: string, alerts: string[], deviceName?: string) {
     const {mail, pushover} = config()
-    if (mail && mail.to) {
-        await sendEmail(mail.to, subject, alerts.join('\n'))
+    if (mail) {
+        await sendEmail(mail, subject, alerts.join('\n'))
     }
-    if (pushover && pushover.token) {
-        await sendNotification(subject, alerts.join('\n'), deviceName)
+    if (pushover) {
+        await sendNotification(pushover, subject, alerts.join('\n'), deviceName)
     }
 
 }
