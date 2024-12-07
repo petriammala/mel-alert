@@ -13,7 +13,7 @@ export function toTemperatureString(temperature: number) {
 }
 
 async function login() {
-    const {appVersion, language, melCloudUsername, melCloudPassword} = config()
+    const {appVersion, melCloudUsername, melCloudPassword} = config()
     const loginUrl = 'https://app.melcloud.com/Mitsubishi.Wifi.Client/Login/ClientLogin2'
     const loginData = {
         AppVersion: appVersion,
@@ -47,25 +47,38 @@ async function withRetries<T>(fn: () => Promise<T>, retryCount: number = 2, rese
             context.lastUsedContextKey = undefined
         }
         console.error('Error', err instanceof Error ? err.message : 'Unknown error', ':', t('data.retry'))
-        return withRetries(fn, retryCount - 1)
+        return withRetries(fn, retryCount - 1, resetContextKeyOnFailure)
     }
 }
 
-async function fetchData(id: number, buildingId: number) {
-    async function fetchData() {
-        const contextKey = context.lastUsedContextKey ?? await login()
-        const fetchDataUrl = `https://app.melcloud.com/Mitsubishi.Wifi.Client/Device/Get?id=${id}&buildingID=${buildingId}`
-        const res = await getJson<MELData | ErrorData>(fetchDataUrl, {'X-MitsContextKey': contextKey})
-        if (isErrorData(res)) {
-            throw new Error(res.ErrorMessage)
-        }
-        return {
-            ...res,
-            LastCommunication: new Date(`${res.LastCommunication}Z`),
-            NextCommunication: new Date(`${res.NextCommunication}Z`)
-        } as MELData
+async function refreshData(deviceId: number, contextKey: string) {
+    const requestRefreshUrl = `https://app.melcloud.com/Mitsubishi.Wifi.Client/Device/RequestRefresh?id=${deviceId}`
+    const res = await getJson<boolean>(requestRefreshUrl, {'X-MitsContextKey': contextKey})
+    if (!res) {
+        throw new Error('Unable to refresh data')
     }
-    return withRetries(fetchData)
+}
+
+async function fetchData(buildingId: number, deviceId: number, contextKey: string) {
+    const fetchDataUrl = `https://app.melcloud.com/Mitsubishi.Wifi.Client/Device/Get?id=${deviceId}&buildingID=${buildingId}`
+    const res = await getJson<MELData | ErrorData>(fetchDataUrl, {'X-MitsContextKey': contextKey})
+    if (isErrorData(res)) {
+        throw new Error(res.ErrorMessage)
+    }
+    return {
+        ...res,
+        LastCommunication: new Date(`${res.LastCommunication}Z`),
+        NextCommunication: new Date(`${res.NextCommunication}Z`)
+    } as MELData
+}
+
+async function fetchMelData(deviceId: number, buildingId: number) {
+    async function fetch() {
+        const contextKey = context.lastUsedContextKey ?? await login()
+        await refreshData(deviceId, contextKey)
+        return fetchData(buildingId, deviceId, contextKey)
+    }
+    return withRetries(fetch)
 }
 
 export async function getDevices() {
@@ -118,7 +131,7 @@ async function rawData() {
         }), {} as DevicesByBuilding)
     for (const buildingId of Object.keys(devicesByBuilding)) {
         for (const device of devicesByBuilding[buildingId].devices) {
-            device.data = await fetchData(device.id, Number(buildingId))
+            device.data = await fetchMelData(device.id, Number(buildingId))
         }
     }
     return devicesByBuilding
