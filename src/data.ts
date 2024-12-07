@@ -4,6 +4,7 @@ import {getJson, postJson} from "./api-client";
 import {config} from "./config/config";
 import {t} from "i18next";
 
+const baseUrl = 'https://app.melcloud.com/Mitsubishi.Wifi.Client/'
 const context = <{lastUsedContextKey?: string}>{}
 
 export function toTemperatureString(temperature: number) {
@@ -14,7 +15,7 @@ export function toTemperatureString(temperature: number) {
 
 async function login() {
     const {appVersion, melCloudUsername, melCloudPassword} = config()
-    const loginUrl = 'https://app.melcloud.com/Mitsubishi.Wifi.Client/Login/ClientLogin2'
+    const loginUrl = `${baseUrl}/Login/ClientLogin2`
     const loginData = {
         AppVersion: appVersion,
         CaptchaChallenge: '',
@@ -52,7 +53,7 @@ async function withRetries<T>(fn: () => Promise<T>, retryCount: number = 2, rese
 }
 
 async function refreshData(deviceId: number, contextKey: string) {
-    const requestRefreshUrl = `https://app.melcloud.com/Mitsubishi.Wifi.Client/Device/RequestRefresh?id=${deviceId}`
+    const requestRefreshUrl = `${baseUrl}/Device/RequestRefresh?id=${deviceId}`
     const res = await getJson<boolean>(requestRefreshUrl, {'X-MitsContextKey': contextKey})
     if (!res) {
         throw new Error('Unable to refresh data')
@@ -60,7 +61,7 @@ async function refreshData(deviceId: number, contextKey: string) {
 }
 
 async function fetchData(buildingId: number, deviceId: number, contextKey: string) {
-    const fetchDataUrl = `https://app.melcloud.com/Mitsubishi.Wifi.Client/Device/Get?id=${deviceId}&buildingID=${buildingId}`
+    const fetchDataUrl = `${baseUrl}/Device/Get?id=${deviceId}&buildingID=${buildingId}`
     const res = await getJson<MELData | ErrorData>(fetchDataUrl, {'X-MitsContextKey': contextKey})
     if (isErrorData(res)) {
         throw new Error(res.ErrorMessage)
@@ -84,7 +85,7 @@ async function fetchMelData(deviceId: number, buildingId: number) {
 export async function getDevices() {
     async function getDevices() {
         const contextKey = context.lastUsedContextKey ?? await login()
-        return getJson<Building[]>('https://app.melcloud.com/Mitsubishi.Wifi.Client/User/ListDevices', {'X-MitsContextKey': contextKey})
+        return getJson<Building[]>(`${baseUrl}/User/ListDevices`, {'X-MitsContextKey': contextKey})
     }
     return withRetries(getDevices)
 }
