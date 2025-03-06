@@ -14,12 +14,16 @@ enum OperationModes {
     Unknown, Heat, Dry, Cool, Fan = 7, Auto
 }
 
+enum FanSpeed {
+    Auto
+}
+
 export type MELData = {
     EffectiveFlags: number
     LocalIPAddress: string | null
     RoomTemperature: number
     SetTemperature: number
-    SetFanSpeed: number
+    SetFanSpeed: FanSpeed | number
     OperationMode: OperationModes
     VaneHorizontal: number
     VaneVertical: number

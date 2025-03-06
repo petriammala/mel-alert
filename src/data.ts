@@ -2,7 +2,7 @@ import {LoginData, ErrorData, MELData, Building, DevicesByBuilding, Device} from
 import {collectAlerts, send} from './alerts'
 import {getJson, postJson} from "./api-client";
 import {config} from "./config/config";
-import {t} from "i18next";
+import {exists, t} from "i18next";
 
 const baseUrl = 'https://app.melcloud.com/Mitsubishi.Wifi.Client/'
 const context = <{lastUsedContextKey?: string}>{}
@@ -111,8 +111,10 @@ ${t('data.power')} ${data.Power}
 ${t('data.standby')} ${data.InStandbyMode}
 ${t('data.roomTemperature')} ${toTemperatureString(data.RoomTemperature)}
 ${t('data.setTemperature')} ${toTemperatureString(data.SetTemperature)}
-${t('data.fanSpeed')} ${data.SetFanSpeed}
-${t('data.operationMode')} ${t(`data.operationMode${data.OperationMode}`)} (${data.OperationMode})
+${t('data.fanSpeed')} ${exists(`data.fanSpeed${data.SetFanSpeed}`)
+        ? t(`data.fanSpeed${data.SetFanSpeed}`) + ` (${data.SetFanSpeed})`
+        : data.SetFanSpeed}
+${t('data.operationMode')} ${t(`data.operationMode${data.OperationMode}`, {})} (${data.OperationMode})
 ${t('data.lastCommunication')} ${data.LastCommunication.toLocaleString(language)}
 ${t('data.nextCommunication')} ${data.NextCommunication.toLocaleString(language)}
 ${t('data.timeNow')} ${date.toLocaleString(language)}`
