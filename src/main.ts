@@ -5,9 +5,7 @@ import {commands} from "./commands";
 import dotenv from "dotenv";
 import {en, fi} from "./config/translations";
 
-if (process.argv[3]) {
-    dotenv.config({path: process.argv[3]})
-}
+process.argv[3] ? dotenv.config({path: process.argv[3]}) : dotenv.config()
 
 i18next.init({
     lng: config().language,
