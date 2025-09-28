@@ -107,8 +107,8 @@ export function dataDetails(device: Device) {
     const {language} = config()
     const date = new Date()
     return `${t('data.device')} ${device.name} (${device.id})
-${t('data.power')} ${data.Power}
-${t('data.standby')} ${data.InStandbyMode}
+${t('data.power')} ${t(`data.power${data.Power ? '1' : '0'}`)} (${data.Power})
+${t('data.standby')} ${t(`data.power${data.InStandbyMode ? '1' : '0'}`)} (${data.InStandbyMode})
 ${t('data.roomTemperature')} ${toTemperatureString(data.RoomTemperature)}
 ${t('data.setTemperature')} ${toTemperatureString(data.SetTemperature)}
 ${t('data.fanSpeed')} ${exists(`data.fanSpeed${data.SetFanSpeed}`)
