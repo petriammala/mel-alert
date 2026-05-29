@@ -8,14 +8,14 @@ function transportOptions(): SMTPTransport.Options {
     const {mail} = config()
 
     return {
-        host: mail?.smtpHost,
+        host: mail?.smtpHost ?? '',
         port: mail?.smtpPort,
         tls: {
-        ciphers:'SSLv3'
-    },
+            ciphers: 'SSLv3'
+        },
         auth: {
             user: mail?.smtpUsername,
-                pass: mail?.smtpPassword,
+            pass: mail?.smtpPassword,
         }
     }
 }
